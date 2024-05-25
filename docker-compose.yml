@@ -20,12 +20,15 @@ services:
     image: mongo
     restart: always
     environment:
+      MONGO_INITDB_DATABASE: Dictionary
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
     volumes:
       - mongo-data:/data/db
+      # init for windows
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
   mongo-express:
     image: mongo-express
     restart: always
