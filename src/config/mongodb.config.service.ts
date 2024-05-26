@@ -13,10 +13,10 @@ export class MongoDBConfigService implements TypeOrmOptionsFactory {
       port: 27017,
       password: this.configService.get('MONGODB_NEST_PASSWORD'),
       username: this.configService.get('MONGODB_NEST_USERNAME'),
-      database: this.configService.get('MONGODB_DATABASE'),
+      database: this.configService.get('MONGODB_NEST_DATABASE'),
       useUnifiedTopology: true,
       useNewUrlParser: true,
-      entities: [],
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
     };
   }
