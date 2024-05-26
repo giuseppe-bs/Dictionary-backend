@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { GreetingsController } from './greetings.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoDBConfigService } from './config/mongodb.config.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -11,9 +11,8 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRootAsync({
+    MongooseModule.forRootAsync({
       useClass: MongoDBConfigService,
-      inject: [MongoDBConfigService],
     }),
   ],
   controllers: [GreetingsController],

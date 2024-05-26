@@ -1,31 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Config } from './config.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ConfigService {
   constructor(
-    @InjectRepository(Config)
-    private readonly configRepository: Repository<Config>,
+    @InjectModel('Config') private readonly configRepository: Model<Config>,
   ) {}
 
   async getNextSequenceValue(sequenceName: string): Promise<number> {
-    const config = await this.configRepository.findOne({
-      where: { key: sequenceName },
-    });
+    const config = await this.configRepository
+      .findOne({
+        key: sequenceName,
+      })
+      .exec();
 
     if (!config) {
-      const newConfig = this.configRepository.create({
+      const newConfig = new this.configRepository({
         key: sequenceName,
         value: 1,
       });
-      await this.configRepository.save(newConfig);
+      await newConfig.save();
       return 1;
     }
 
     config.value += 1;
-    await this.configRepository.save(config);
+    await config.save();
     return config.value;
   }
 }

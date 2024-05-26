@@ -1,13 +1,11 @@
-import { Entity, ObjectIdColumn, Column, ObjectId } from 'typeorm';
-
-@Entity('config')
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+@Schema({})
 export class Config {
-  @ObjectIdColumn()
-  id: ObjectId;
-
-  @Column()
+  @Prop({ required: true, unique: true, type: String })
   key: string;
 
-  @Column()
+  @Prop({ required: true, type: Number })
   value: number;
 }
+
+export const ConfigSchema = SchemaFactory.createForClass(Config);

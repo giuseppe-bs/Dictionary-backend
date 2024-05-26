@@ -1,35 +1,17 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  ObjectId,
-  ObjectIdColumn,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-@Entity({ name: 'users' })
-@Unique('name', ['name'])
+@Schema({
+  timestamps: true,
+})
 export class User {
-  @ObjectIdColumn()
-  _id: ObjectId;
-
-  @Column({ name: 'name', type: 'string', nullable: false })
+  @Prop({ required: true, unique: true, type: String })
   name: string;
 
-  @Column({ name: 'email', type: 'string', nullable: false })
+  @Prop({ required: true, unique: true, type: String })
   email: string;
 
-  @Column({ name: 'password', type: 'string', nullable: false })
+  @Prop({ required: true, type: String })
   password: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: string;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: string;
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: string;
 }
+
+export const UserSchema = SchemaFactory.createForClass(User);

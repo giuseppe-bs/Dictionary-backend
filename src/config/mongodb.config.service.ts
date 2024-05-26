@@ -1,23 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import {
+  MongooseModuleOptions,
+  MongooseOptionsFactory,
+} from '@nestjs/mongoose';
 
 @Injectable()
-export class MongoDBConfigService implements TypeOrmOptionsFactory {
+export class MongoDBConfigService implements MongooseOptionsFactory {
   constructor(private configService: ConfigService) {}
 
-  createTypeOrmOptions(): TypeOrmModuleOptions {
+  uri(): string {
+    return (
+      'mongodb://' +
+      this.configService.get('MONGODB_USERNAME') +
+      ':' +
+      this.configService.get('MONGODB_PASSWORD') +
+      '@' +
+      this.configService.get('MONGODB_HOST') +
+      ':' +
+      this.configService.get('MONGODB_PORT') +
+      '/' +
+      this.configService.get('MONGODB_DATABASE')
+    );
+  }
+  createMongooseOptions(): MongooseModuleOptions {
     return {
-      type: 'mongodb',
-      host: 'mongo',
-      port: 27017,
-      password: this.configService.get('MONGODB_NEST_PASSWORD'),
-      username: this.configService.get('MONGODB_NEST_USERNAME'),
-      database: this.configService.get('MONGODB_NEST_DATABASE'),
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: true,
+      uri: this.uri(),
     };
   }
 }

@@ -1,14 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { IsUniqueEmailValidator } from './validator/isUniqueEmail.validator';
-import { User } from './user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { User, UserSchema } from './user.entity';
 import { UserService } from './user.service';
 import { ConfigService } from './counter/config.service';
-import { Config } from './counter/config.entity';
+import { Config, ConfigSchema } from './counter/config.entity';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Config])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: User.name, collection: 'User', schema: UserSchema },
+      { name: Config.name, collection: 'Config', schema: ConfigSchema },
+    ]),
+  ],
   controllers: [AuthController],
   providers: [UserService, ConfigService, IsUniqueEmailValidator],
 })

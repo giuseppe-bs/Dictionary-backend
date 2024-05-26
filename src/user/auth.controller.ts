@@ -22,10 +22,7 @@ export class AuthController {
   async singin(
     @Body() userLoginData: UserSinginDTO,
   ): Promise<UserSinginResultDTO> {
-    const user = new User();
-    user.email = userLoginData.email;
-    user.password = userLoginData.password;
-    await this.userService.singIn(user);
+    const user = await this.userService.singIn(userLoginData);
     console.log(JSON.stringify(user));
     return {
       name: user.name,
