@@ -117,7 +117,7 @@ export class UserService {
 
   async getHistory(user: any): Promise<any> {
     return await this.userRepository
-      .findById(user._id)
+      .findById(user.userId)
       .exec()
       .then((user) => {
         if (!user) {
@@ -129,7 +129,7 @@ export class UserService {
 
   async getFavorite(user: any): Promise<any> {
     return await this.userRepository
-      .findById(user._id)
+      .findById(user.userId)
       .exec()
       .then((user) => {
         if (!user) {

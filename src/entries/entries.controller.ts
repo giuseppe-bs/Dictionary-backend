@@ -26,8 +26,10 @@ export class EntriesController {
   @Get('/:word')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(CustomCacheInterceptor)
-  async getWordDetail(@Param() param: any) {
-    return await this.entriesService.getWordDetail(param.word);
+  async getWordDetail(@Param() param: any, @User() user: any){
+    const detail = await this.entriesService.getWordDetail(param.word);
+    await this.entriesService.saveWordInHistory(param.word, user);
+    return detail;
   }
 
   @Post('/:word/favorite')

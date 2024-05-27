@@ -36,6 +36,7 @@ export class EntriesService {
     }
 
     console.log(`Word ${word} found in DB`);
+
     if (wordMongo.detail) {
       const detail: WordDetail = await this.wordDetailModel
         .findOne({
