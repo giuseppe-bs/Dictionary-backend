@@ -7,11 +7,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { ResponseTimeInterceptor } from './redis/responseTime.interceptor';
+import { EntriesModule } from './entries/entries.module';
 // import { CacheMiddleware } from './redis/cache.middleware';
 
 @Module({
   imports: [
     UserModule,
+    EntriesModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -26,6 +28,7 @@ import { ResponseTimeInterceptor } from './redis/responseTime.interceptor';
         }),
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
+        ttl: 3600 * 12,
       }),
       inject: [ConfigService],
       isGlobal: true,

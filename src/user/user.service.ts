@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserLoginDTO } from './dto/userLogin.dto';
-import { ConfigService } from './counter/config.service';
+import { ConfigMongoService } from './counter/configMongo.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserSinginDTO } from './dto/userSingin.dto';
 import { userAuthResultDTO } from './dto/userAuthResult.dto';
 import { JwtService } from '@nestjs/jwt';
 
-interface UserPayload {
+export interface UserPayload {
   sub: string;
   name: string;
   email: string;
@@ -19,7 +19,7 @@ export class UserService {
   constructor(
     //inject user mongoose
     @InjectModel('User') private readonly userRepository: Model<User>,
-    private configService: ConfigService,
+    private configService: ConfigMongoService,
     private jwtService: JwtService,
   ) {}
 
@@ -85,5 +85,60 @@ export class UserService {
       })
       .exec();
     return checkEmail;
+  }
+
+  async validatePayload(payload: UserPayload): Promise<User> {
+    const user = await this.userRepository.findById(payload.sub).exec();
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
+
+  async getMe(user: any): Promise<{
+    name: string;
+    email: string;
+    id: string;
+  }> {
+    return await this.userRepository
+      .findById(user._id)
+      .exec()
+      .then((user) => {
+        if (!user) {
+          throw new Error('User not found');
+        }
+        return {
+          name: user.name,
+          email: user.email,
+          id: user._id.toHexString(),
+        };
+      });
+  }
+
+  async getHistory(user: any): Promise<any> {
+    return await this.userRepository
+      .findById(user._id)
+      .exec()
+      .then((user) => {
+        if (!user) {
+          throw new Error('User not found');
+        }
+        return user.history;
+      });
+  }
+
+  async getFavorite(user: any): Promise<any> {
+    return await this.userRepository
+      .findById(user._id)
+      .exec()
+      .then((user) => {
+        if (!user) {
+          throw new Error('User not found');
+        }
+        return user.favorite;
+      });
+  }
+  async getUserById(userId: any) {
+    return this.userRepository.findById(userId).exec();
   }
 }

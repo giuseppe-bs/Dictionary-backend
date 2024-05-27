@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 @Injectable()
-export class ConfigService {
+export class ConfigMongoService {
   constructor(
     @InjectModel('Config') private readonly configRepository: Model<Config>,
   ) {}

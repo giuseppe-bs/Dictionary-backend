@@ -22,9 +22,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     const response = context.switchToHttp().getResponse();
-    const key = this.trackBy(context); // Move this line here to avoid async issues
-
-    // Call super.intercept() to maintain caching behavior
+    const key = this.trackBy(context);
 
     if (key) {
       const cachedResponse = await this.cacheManager.get(key);
