@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { ConfigService } from './counter/config.service';
 import { Config, ConfigSchema } from './counter/config.entity';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -13,6 +14,13 @@ import { MongooseModule } from '@nestjs/mongoose';
       { name: User.name, collection: 'User', schema: UserSchema },
       { name: Config.name, collection: 'Config', schema: ConfigSchema },
     ]),
+    JwtModule.register({
+      global: true,
+      secret: 'secretKey',
+      signOptions: {
+        expiresIn: '24h',
+      },
+    }),
   ],
   controllers: [AuthController],
   providers: [UserService, ConfigService, IsUniqueEmailValidator],
