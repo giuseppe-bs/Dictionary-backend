@@ -25,15 +25,6 @@ export class WordDetail {
 
   @Prop({ type: String })
   origin: string;
-
-  toDetailDto() {
-    return {
-      word: this.word.word,
-      meaning: this.meaning,
-      phonetic: this.phonetic,
-      origin: this.origin,
-    };
-  }
 }
 
 export const WordDetailSchema = SchemaFactory.createForClass(WordDetail);

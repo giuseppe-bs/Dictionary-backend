@@ -42,7 +42,7 @@ export class EntriesService {
           _id: wordMongo.detail,
         })
         .exec();
-      return detail.toDetailDto();
+      return this.toDetailDto(detail);
     } else {
       const detailFromWeb =
         await this.dictionaryService.getWordDetailFromAPI(wordMongo);
@@ -51,7 +51,7 @@ export class EntriesService {
           wordMongo,
           new this.wordDetailModel(detailFromWeb),
         );
-        return wordDetail.toDetailDto();
+        return this.toDetailDto(wordDetail);
       }
     }
   }
@@ -114,5 +114,14 @@ export class EntriesService {
     });
     await userMongo.save();
     return userMongo.history;
+  }
+
+  private toDetailDto(wordDetail: WordDetail): wordDetailDto {
+    return {
+      word: wordDetail.word.word,
+      phonetic: wordDetail.phonetic,
+      meaning: wordDetail.meaning,
+      origin: wordDetail.origin,
+    };
   }
 }
