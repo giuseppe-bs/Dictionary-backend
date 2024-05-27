@@ -1,30 +1,40 @@
-import { Injectable, NestMiddleware, Inject } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CACHE_MANAGER, Cache, CacheInterceptor } from '@nestjs/cache-manager';
+import {
+  CallHandler,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class CacheMiddleware implements NestMiddleware {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+export class CustomCacheInterceptor extends CacheInterceptor {
+  constructor(
+    @Inject(CACHE_MANAGER) cacheManager: Cache,
+    @Inject(Reflector) reflector: Reflector,
+  ) {
+    super(cacheManager, reflector);
+  }
 
-  async use(req: Request, res: Response, next: NextFunction) {
-    const cacheKey = req.originalUrl;
-    const cachedResponse = await this.cacheManager.get(cacheKey);
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const response = context.switchToHttp().getResponse();
+    const key = this.trackBy(context); // Move this line here to avoid async issues
 
-    if (cachedResponse) {
-      res.setHeader('x-cache', 'HIT');
-      res.send(cachedResponse);
-    } else {
-      res.setHeader('x-cache', 'MISS');
+    // Call super.intercept() to maintain caching behavior
 
-      const originalSend = res.send.bind(res);
-
-      res.send = (body: any) => {
-        this.cacheManager.set(cacheKey, body, 60);
-        return originalSend(body);
-      };
-
-      next();
+    if (key) {
+      const cachedResponse = await this.cacheManager.get(key);
+      if (cachedResponse) {
+        response.setHeader('x-cache', 'HIT');
+      } else {
+        response.setHeader('x-cache', 'MISS');
+      }
     }
+
+    return super.intercept(context, next);
   }
 }

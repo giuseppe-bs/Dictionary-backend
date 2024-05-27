@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GreetingsController } from './greetings.controller';
 import { MongoDBConfigService } from './config/mongodb.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { ResponseTimeInterceptor } from './redis/responseTime.interceptor';
-import { CacheMiddleware } from './redis/cache.middleware';
+// import { CacheMiddleware } from './redis/cache.middleware';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { CacheMiddleware } from './redis/cache.middleware';
       useFactory: async (configService: ConfigService) => ({
         store: await redisStore({
           url: `redis://${configService.get('REDIS_HOST')}:${configService.get('REDIS_PORT')}/0`,
-          ttl: 60,
+          ttl: 3600 * 12,
         }),
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
@@ -39,8 +39,9 @@ import { CacheMiddleware } from './redis/cache.middleware';
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CacheMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
+//  implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     // consumer.apply(CacheMiddleware).forRoutes('*');
+//   }
+// }
